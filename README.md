@@ -18,4 +18,10 @@ A web application to help myself plan and track my university studies and credit
 - Revision tracking for exam time
 - Credit tracker
 
-## Tech Stack - TypeScript - GitHub - (To be decided)
+## Tech Stack 
+- TypeScript 
+- GitHub 
+- (To be decided)
+
+## Development Log
+- Repository created
