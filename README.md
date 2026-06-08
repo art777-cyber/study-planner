@@ -11,11 +11,11 @@ A web application to help myself plan and track my university studies and credit
 ### Core Features
 - Calendar-based study planner
 - Weekly timetable management
-- Study task tracking
+- Study task and homework tracking
 
 ### Future Features
 - PDF storage for slides and notes
-- Homework and revision tracking
+- Revision tracking for exam time
 - Credit tracker
 
 ## Tech Stack - TypeScript - GitHub - (To be decided)
