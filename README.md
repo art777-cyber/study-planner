@@ -2,9 +2,9 @@
 A web application to help myself plan and track my university studies and credits
 
 ## Goals
--Help me manage university coursework.
--Keep class materials organized.
--Track degree progress and credits.
+- Help me manage university coursework.
+- Keep class materials organized.
+- Track degree progress and credits.
 
 ## Planned Features
 
