@@ -36,3 +36,37 @@
   padding: 15px;
   min-width: 150px;
 }
+
+.timetable-page {
+  padding: 30px;
+}
+
+.timetable-page h1 {
+  margin-bottom: 20px;
+}
+
+.timetable-table {
+  border-collapse: collapse;
+}
+
+.timetable-table th,
+.timetable-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+.day-label {
+  font-weight: bold;
+  min-width: 100px;
+}
+
+.timetable-table input {
+  width: 180px;
+  padding: 6px;
+}
+
+.save-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
