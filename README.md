@@ -184,6 +184,30 @@ SQLite provides:
 
 while remaining appropriate for a single-user application.
 
+## Why Prisma?
+
+### Alternatives Considered
+
+1. Raw SQL Queries
+2. Prisma ORM
+
+### Chosen
+
+Prisma ORM
+
+### Reasoning
+
+The application requires a way for the Next.js and TypeScript code to interact with the SQLite database.
+
+Raw SQL provides direct control over database operations but requires writing and maintaining SQL queries throughout the application.
+
+Prisma provides a higher-level interface that integrates well with TypeScript, reduces boilerplate code, and improves developer productivity.
+
+For this project, the primary goal is to focus on application architecture, data modeling, and feature development rather than low-level database query management.
+
+Prisma also provides a clear migration path if the project later moves from SQLite to a larger database system such as PostgreSQL.
+
+
 ---
 
 # Data Model
@@ -252,6 +276,14 @@ Represents a reminder displayed on the homepage.
 ### Chosen
 
 Store uploaded files separately and save file references in the database.
+Database stores:
+- Course data
+- Timetable data
+- Calendar data
+- File paths
+
+File system stores:
+- Actual PDFs
 
 ### Reasoning
 
