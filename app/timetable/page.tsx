@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function TimetablePage() {
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
@@ -8,6 +8,15 @@ export default function TimetablePage() {
 
   const [timetable, setTimetable] = useState<any>({});
   const [savedData, setSavedData] = useState("");
+
+  // LOAD saved data on page refresh
+  useEffect(() => {
+    const saved = localStorage.getItem("timetable");
+
+    if (saved) {
+      setTimetable(JSON.parse(saved));
+    }
+  }, []);
 
   const handleChange = (day: string, period: number, value: string) => {
     setTimetable((prev: any) => ({
@@ -19,22 +28,9 @@ export default function TimetablePage() {
     }));
   };
 
-  const handleSave = async () => {
-    console.log("🟡 Save clicked");
-
-    const res = await fetch("/api/timetable", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ timetable }),
-    });
-
-    const data = await res.json();
-
-    console.log("🟢 API RESPONSE:", data);
-
-    setSavedData("Saved!");
+  const handleSave = () => {
+    localStorage.setItem("timetable", JSON.stringify(timetable));
+    setSavedData("Saved locally!");
   };
 
   return (
