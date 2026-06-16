@@ -157,32 +157,48 @@ Multi-user support can be added later if required.
 
 ---
 
-## Why SQLite?
+## Data Storage Strategy
 
-### Alternatives Considered
+### Storage Options Considered
 
 1. Browser Local Storage
 2. SQLite
-3. PostgreSQL
+3. Cloudflare D1
+4. PostgreSQL
 
-### Chosen
+### Current Choice
 
-SQLite
+Browser Local Storage (Development Phase)
 
 ### Reasoning
 
-Local Storage is simple but becomes limiting once the application manages large amounts of structured data.
+The application is currently in active development.
 
-PostgreSQL is powerful but introduces additional infrastructure complexity.
+Local Storage allows rapid frontend development without requiring database infrastructure and enables testing of core functionality such as:
 
-SQLite provides:
+* Timetable management
+* Sticky notes
+* Calendar integration
+* Credit tracking
 
-* Structured database design
-* Minimal setup
-* Easy backups
-* Future migration path
+### Planned Migration
 
-while remaining appropriate for a single-user application.
+Cloudflare D1 with Prisma
+
+### Reasoning
+
+Once the application's core features are complete, data storage will be migrated to Cloudflare D1 using Prisma as the database ORM.
+
+This approach provides:
+
+* Persistent cloud-based storage
+* Access across multiple devices
+* Simplified deployment on Cloudflare
+* Structured relational data
+* Future scalability
+
+while maintaining a relatively simple deployment workflow for a personal study planner.
+
 
 ## Why Prisma?
 

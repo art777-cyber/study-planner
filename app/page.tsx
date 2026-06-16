@@ -1,6 +1,58 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [notes, setNotes] = useState<string[]>([]);
+  const [newNote, setNewNote] = useState("");
+
+  const [selectedNote, setSelectedNote] = useState<number | null>(null);
+  const [editText, setEditText] = useState("");
+
+  useEffect(() => {
+    const savedNotes = localStorage.getItem("notes");
+
+    if (savedNotes) {
+      setNotes(JSON.parse(savedNotes));
+    }
+  }, []);
+
+  const saveNotes = (updatedNotes: string[]) => {
+    setNotes(updatedNotes);
+    localStorage.setItem("notes", JSON.stringify(updatedNotes));
+  };
+
+  const handleAddNote = () => {
+    if (!newNote.trim()) return;
+
+    const updatedNotes = [...notes, newNote];
+
+    saveNotes(updatedNotes);
+    setNewNote("");
+  };
+
+  const handleDelete = () => {
+    if (selectedNote === null) return;
+
+    const updatedNotes = notes.filter(
+      (_, index) => index !== selectedNote
+    );
+
+    saveNotes(updatedNotes);
+    setSelectedNote(null);
+  };
+
+  const handleEdit = () => {
+    if (selectedNote === null) return;
+
+    const updatedNotes = [...notes];
+    updatedNotes[selectedNote] = editText;
+
+    saveNotes(updatedNotes);
+    setSelectedNote(null);
+  };
+
   return (
     <div className="homepage">
       <h1 className="page-title">Arya's Study Planner</h1>
@@ -21,13 +73,84 @@ export default function Home() {
 
       <h2 className="section-title">Sticky Notes</h2>
 
-      <button className="nav-button">Add Note</button>
+      <div>
+        <input
+          type="text"
+          placeholder="Enter a note..."
+          value={newNote}
+          onChange={(e) => setNewNote(e.target.value)}
+        />
+
+        <br />
+        <br />
+
+        <button className="nav-button" onClick={handleAddNote}>
+          Add Note
+        </button>
+      </div>
 
       <div className="notes-container">
-        <div className="note-card">NLP Homework</div>
-        <div className="note-card">Lab Report</div>
-        <div className="note-card">Exam Friday</div>
+        {notes.map((note, index) => (
+          <div
+            key={index}
+            className="note-card"
+            onClick={() => {
+              setSelectedNote(index);
+              setEditText(note);
+            }}
+            style={{ cursor: "pointer" }}
+          >
+            {note}
+          </div>
+        ))}
       </div>
+
+      {selectedNote !== null && (
+        <div
+          style={{
+            position: "fixed",
+            top: "30%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            background: "white",
+            padding: "20px",
+            border: "1px solid black",
+            zIndex: 1000,
+          }}
+        >
+          <h3>Edit Note</h3>
+
+          <input
+            type="text"
+            value={editText}
+            onChange={(e) => setEditText(e.target.value)}
+          />
+
+          <br />
+          <br />
+
+          <div>
+  <button onClick={handleEdit}>
+    Save Changes
+  </button>
+
+  <button
+    onClick={handleDelete}
+    style={{ marginLeft: "10px" }}
+  >
+    Delete
+  </button>
+</div>
+
+<br />
+
+<button
+  onClick={() => setSelectedNote(null)}
+>
+  Cancel
+</button>
+        </div>
+      )}
     </div>
   );
 }
