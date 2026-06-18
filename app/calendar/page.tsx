@@ -1,37 +1,92 @@
 "use client";
 
-import Link from "next/link";
+import { useState } from "react";
 
 export default function CalendarPage() {
-  const year = 2026;
-  const month = 5; // June (0 = Jan)
+  const today = new Date();
 
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth());
+  const [currentYear, setCurrentYear] = useState(today.getFullYear());
 
-  const days: (number | null)[] = [];
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+  const calendarCells = [];
 
   for (let i = 0; i < firstDay; i++) {
-    days.push(null);
+    calendarCells.push(null);
   }
 
   for (let day = 1; day <= daysInMonth; day++) {
-    days.push(day);
+    calendarCells.push(day);
   }
 
+  const previousMonth = () => {
+    if (currentYear === 2026 && currentMonth === 3) return;
+
+    if (currentMonth === 0) {
+      setCurrentMonth(11);
+      setCurrentYear(currentYear - 1);
+    } else {
+      setCurrentMonth(currentMonth - 1);
+    }
+  };
+
+  const nextMonth = () => {
+    if (currentMonth === 11) {
+      setCurrentMonth(0);
+      setCurrentYear(currentYear + 1);
+    } else {
+      setCurrentMonth(currentMonth + 1);
+    }
+  };
+
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>June 2026</h1>
+    <div style={{ padding: "30px" }}>
+      <h1>Calendar</h1>
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          width: "400px",
+          marginBottom: "20px",
+        }}
+      >
+        <button onClick={previousMonth}>◀ Previous</button>
+
+        <h2>
+          {monthNames[currentMonth]} {currentYear}
+        </h2>
+
+        <button onClick={nextMonth}>Next ▶</button>
+      </div>
 
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(7, 1fr)",
-          gap: "10px",
-          maxWidth: "700px",
+          gridTemplateColumns: "repeat(7, 60px)",
+          gap: "5px",
         }}
       >
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+        {daysOfWeek.map((day) => (
           <div
             key={day}
             style={{
@@ -43,23 +98,19 @@ export default function CalendarPage() {
           </div>
         ))}
 
-        {days.map((day, index) => (
+        {calendarCells.map((day, index) => (
           <div
             key={index}
             style={{
               border: "1px solid black",
-              minHeight: "80px",
-              padding: "8px",
-              textAlign: "center",
+              height: "60px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              cursor: day ? "pointer" : "default",
             }}
           >
-            {day && (
-              <Link
-                href={`/calendar/2026-06-${String(day).padStart(2, "0")}`}
-              >
-                {day}
-              </Link>
-            )}
+            {day}
           </div>
         ))}
       </div>
