@@ -39,7 +39,7 @@ export default function CalendarPage() {
     calendarCells.push(day);
   }
 
-  const previousMonth = () => {
+  function previousMonth() {
     if (currentYear === 2026 && currentMonth === 3) return;
 
     if (currentMonth === 0) {
@@ -48,16 +48,16 @@ export default function CalendarPage() {
     } else {
       setCurrentMonth(currentMonth - 1);
     }
-  };
+  }
 
-  const nextMonth = () => {
+  function nextMonth() {
     if (currentMonth === 11) {
       setCurrentMonth(0);
       setCurrentYear(currentYear + 1);
     } else {
       setCurrentMonth(currentMonth + 1);
     }
-  };
+  }
 
   return (
     <div style={{ padding: "30px" }}>
@@ -83,7 +83,7 @@ export default function CalendarPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(7, 60px)",
+          gridTemplateColumns: "repeat(7, 70px)",
           gap: "5px",
         }}
       >
@@ -104,7 +104,7 @@ export default function CalendarPage() {
             key={index}
             style={{
               border: "1px solid black",
-              height: "60px",
+              height: "70px",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
@@ -119,6 +119,12 @@ export default function CalendarPage() {
             )}
           </div>
         ))}
+      </div>
+
+      <div style={{ marginTop: "40px" }}>
+        <Link href="/calendar/edit">
+          <button>Edit Timetable</button>
+        </Link>
       </div>
     </div>
   );
