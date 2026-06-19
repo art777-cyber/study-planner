@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 export default function CalendarPage() {
   const today = new Date();
@@ -107,10 +108,15 @@ export default function CalendarPage() {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              cursor: day ? "pointer" : "default",
             }}
           >
-            {day}
+            {day && (
+              <Link
+                href={`/calendar/${currentYear}/${currentMonth + 1}/${day}`}
+              >
+                {day}
+              </Link>
+            )}
           </div>
         ))}
       </div>
