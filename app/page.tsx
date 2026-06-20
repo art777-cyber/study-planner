@@ -55,7 +55,7 @@ export default function Home() {
 
   return (
     <div className="homepage">
-      <h1 className="page-title">Arya's Study Planner</h1>
+      <h1 className="page-title">Study Planner</h1>
 
       <div className="button-group">
         <Link href="/timetable">

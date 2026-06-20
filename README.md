@@ -2,86 +2,81 @@
 
 ## Project Overview
 
-Study Planner is a personal academic management web application designed to help university students organize courses, class materials, assignments, schedules, credits, and reminders in a single location.
+Study Planner is a full-stack academic management web application designed to help university students organize courses, class materials, assignments, schedules, credits, and reminders in a unified system.
 
-The application is being developed primarily for personal use but is also intended to serve as a portfolio project demonstrating software engineering decision-making, architecture planning, and full-stack web development skills.
+The project is being developed as both a personal productivity tool and a portfolio project demonstrating full-stack development using modern web technologies.
 
 ---
 
 # Goals
 
-The application should allow a student to:
+The application allows users to:
 
-* Register and edit a semester timetable.
-* Automatically generate a calendar from the timetable.
-* Override individual dates when schedules change.
-* Store class-specific study materials.
-* Track assignment progress.
-* Monitor graduation credit requirements.
-* Maintain sticky-note reminders and deadlines.
+- Create and edit a weekly timetable
+- Generate a dynamic calendar from the timetable
+- Override schedules for individual dates
+- Upload and store class materials (PDFs)
+- Track assignment and study progress
+- Monitor graduation credit requirements
+- Maintain reminders and sticky notes
 
 ---
 
 # Core Features
 
-## 1. Timetable Registration
+## 1. Timetable System
 
-Users can create and edit a weekly timetable.
-
-The timetable serves as a template for generating calendar events.
+Users define a weekly timetable which acts as a template for all calendar generation.
 
 ---
 
-## 2. Calendar
+## 2. Calendar System
 
-The calendar automatically generates class sessions based on the registered timetable.
+The calendar is dynamically generated from the timetable.
 
 Users can:
 
-* View classes for any date.
-* Edit individual dates.
-* Add makeup classes.
-* Remove cancelled classes.
-* Handle holiday schedule changes.
-
-The weekly timetable remains unchanged when individual dates are modified.
+- View classes by date
+- Navigate between months
+- Override individual dates (e.g. cancelled or rescheduled classes)
+- Maintain original weekly timetable as a base template
 
 ---
 
 ## 3. Class Session Workspace
 
-Every class session has its own workspace.
-
-Each session contains:
+Each class session includes:
 
 ### File Storage
-
-* Class Slides PDF
-* Class Notes PDF
-* Homework Questions PDF
-* Homework Answers PDF
+- Lecture Slides (PDF)
+- Notes (PDF)
+- Assignments (PDF)
 
 ### Progress Tracking
+- Material Reviewed
+- Homework Completed
+- Homework Submitted
 
-* Class Content Reviewed
-* Homework Completed
-* Homework Submitted
-
-These items are tracked independently for every class session.
+All progress is stored per user and per date.
 
 ---
 
 ## 4. Credit Tracker
 
-A dedicated section for monitoring degree progress.
+A flexible system for tracking graduation credit requirements.
 
-Users can create categories and manually update completed credits.
+Users can:
+
+- Add custom categories
+- Define required credits
+- Track completed and in-progress credits
+- Manually update progress
 
 ---
 
 ## 5. Sticky Notes
 
-Homepage sticky notes allow quick reminders and deadlines.
+A lightweight reminder system for deadlines and tasks.
 
 ---
 
@@ -89,236 +84,154 @@ Homepage sticky notes allow quick reminders and deadlines.
 
 ## Why Next.js?
 
-### Alternatives Considered
+Next.js is used for:
 
-1. Vanilla HTML/CSS/JavaScript
-2. React
-3. Next.js
+- UI rendering
+- Routing system
+- API integration
+- Easy deployment
 
-### Chosen
-
-Next.js
-
-### Reasoning
-
-Vanilla JavaScript would require building routing, application structure, and backend functionality manually.
-
-React provides reusable components but still requires separate decisions regarding backend architecture.
-
-Next.js provides:
-
-* React framework
-* Routing
-* Backend capability
-* TypeScript support
-* Easier deployment
-
-This allows focus on application design rather than infrastructure.
+It provides a full React-based framework suitable for full-stack applications.
 
 ---
 
 ## Why TypeScript?
 
-### Alternatives Considered
+TypeScript improves:
 
-1. JavaScript
-2. TypeScript
+- Code reliability
+- Debugging
+- Data structure safety
+- Maintainability
 
-### Chosen
-
-TypeScript
-
-### Reasoning
-
-TypeScript provides type checking and catches mistakes during development.
-
-The project is intended as a learning experience and portfolio project, making code reliability more important than minimizing complexity.
+It is essential for managing complex state like schedules and academic data.
 
 ---
 
-## Why Single User First?
+## Why Supabase?
 
-### Alternatives Considered
+Supabase is used as the backend because it provides:
 
-1. Multi-user application
-2. Single-user application
+### 1. Database (PostgreSQL)
+Stores:
+- Timetables
+- Calendar overrides
+- Credit tracking
+- User data
 
-### Chosen
+### 2. Authentication
+Handles:
+- User login
+- User-specific data separation
+- Secure access control
 
-Single-user application
-
-### Reasoning
-
-Authentication, permissions, password management, and user isolation introduce substantial complexity.
-
-The project's primary purpose is to create a useful personal productivity system.
-
-Multi-user support can be added later if required.
+### 3. File Storage
+Stores:
+- PDF lecture notes
+- Assignments
+- Class materials
 
 ---
 
-## Data Storage Strategy
+## Why Authentication?
 
-### Storage Options Considered
+Authentication allows:
 
-1. Browser Local Storage
-2. SQLite
-3. Cloudflare D1
-4. PostgreSQL
+- Each user to have private data
+- Secure separation of timetables and PDFs
+- Real-world SaaS-style application structure
 
-### Current Choice
+Without authentication, all users would share the same dataset.
 
-Browser Local Storage (Development Phase)
+---
 
-### Reasoning
+## Why Cloudflare Deployment?
 
-The application is currently in active development.
+Cloudflare is used to:
 
-Local Storage allows rapid frontend development without requiring database infrastructure and enables testing of core functionality such as:
-
-* Timetable management
-* Sticky notes
-* Calendar integration
-* Credit tracking
-
-### Planned Migration
-
-Cloudflare D1 with Prisma
-
-### Reasoning
-
-Once the application's core features are complete, data storage will be migrated to Cloudflare D1 using Prisma as the database ORM.
-
-This approach provides:
-
-* Persistent cloud-based storage
-* Access across multiple devices
-* Simplified deployment on Cloudflare
-* Structured relational data
-* Future scalability
-
-while maintaining a relatively simple deployment workflow for a personal study planner.
-
-
-## Why Prisma?
-
-### Alternatives Considered
-
-1. Raw SQL Queries
-2. Prisma ORM
-
-### Chosen
-
-Prisma ORM
-
-### Reasoning
-
-The application requires a way for the Next.js and TypeScript code to interact with the SQLite database.
-
-Raw SQL provides direct control over database operations but requires writing and maintaining SQL queries throughout the application.
-
-Prisma provides a higher-level interface that integrates well with TypeScript, reduces boilerplate code, and improves developer productivity.
-
-For this project, the primary goal is to focus on application architecture, data modeling, and feature development rather than low-level database query management.
-
-Prisma also provides a clear migration path if the project later moves from SQLite to a larger database system such as PostgreSQL.
-
+- Host the frontend application
+- Provide global access via a public URL
+- Ensure fast performance
+- Serve the application at scale
 
 ---
 
 # Data Model
 
+## User
+Managed by Supabase Auth
+
+---
+
 ## Course
 
-Represents a university course.
-
-Fields:
-
-* Course Name
-* Credits
+- Course name
+- Credits
 
 ---
 
 ## Timetable Entry
 
-Represents a recurring weekly class.
-
-Fields:
-
-* Day of Week
-* Period
-* Course
+- Day of week
+- Period
+- Course
 
 ---
 
 ## Calendar Override
 
-Represents changes to a specific date.
+- Date
+- Modified timetable for that specific date
 
 ---
 
 ## Class Session
 
-Represents a specific occurrence of a class.
+Represents a specific class occurrence.
 
 Contains:
 
-* PDFs
-* Progress Checkboxes
-* Session Information
+- PDFs (stored in Supabase Storage)
+- Progress tracking
+- Session metadata
 
 ---
 
 ## Credit Category
 
-Represents a graduation requirement category.
+- Required credits
+- Completed credits
+- In-progress credits
 
 ---
 
 ## Sticky Note
 
-Represents a reminder displayed on the homepage.
+- Title
+- Content
+- Timestamp
 
 ---
 
-# File Storage Design
+# Storage Design
 
-### Alternatives Considered
+## Database stores:
+- Structured academic data
+- User progress
+- Timetable and scheduling
 
-1. Store PDFs inside database
-2. Store PDFs as files and save references
-3. Cloud storage
+## Supabase Storage stores:
+- PDF files
+- Uploaded course materials
 
-### Chosen
-
-Store uploaded files separately and save file references in the database.
-Database stores:
-- Course data
-- Timetable data
-- Calendar data
-- File paths
-
-File system stores:
-- Actual PDFs
-
-### Reasoning
-
-Databases are optimized for structured information rather than large binary files.
-
-Storing files separately improves maintainability and mirrors common real-world application architecture.
+## Reasoning:
+Databases are optimized for structured data, while file storage systems are optimized for large binary files.
 
 ---
 
 # Future Improvements
 
-Potential future features:
-
-* User Accounts
-* Authentication
-* Cloud Storage
-* Multi-user Support
-* Shared Timetables
-* Mobile Responsive Design
-* Automatic Credit Calculations
-* Grade Tracking
-* Exam Tracking
+- Mobile app version
+- Shared timetables between users
+- Exam tracking system
+- Notification system
