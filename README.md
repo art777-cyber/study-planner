@@ -1,3 +1,11 @@
+# 📚 Study Planner
+
+## 🔗 Live Demo
+
+👉 https://study-planner.aryarajtyagi777.workers.dev
+
+---
+
 ## Tech Stack
 
 - **Frontend:** Next.js, React, TypeScript  
