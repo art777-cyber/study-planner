@@ -4,16 +4,13 @@ import { useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
 import { useRouter } from "next/navigation";
 
-export default function LoginPage() {
+export default function SetPasswordPage() {
   const router = useRouter();
-
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  async function handleLogin() {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+  async function handleSetPassword() {
+    const { error } = await supabase.auth.updateUser({
+      password: password,
     });
 
     if (error) {
@@ -21,32 +18,25 @@ export default function LoginPage() {
       return;
     }
 
+    alert("Password set successfully!");
     router.push("/home");
   }
 
   return (
     <div style={{ padding: "40px" }}>
-      <h1>Login</h1>
-
-      <input
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-
-      <br /><br />
+      <h1>Create Password</h1>
 
       <input
         type="password"
-        placeholder="Password"
+        placeholder="New password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
 
       <br /><br />
 
-      <button onClick={handleLogin}>
-        Login
+      <button onClick={handleSetPassword}>
+        Set Password
       </button>
     </div>
   );

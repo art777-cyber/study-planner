@@ -122,9 +122,6 @@ export default function CalendarPage() {
       </div>
 
       <div style={{ marginTop: "40px" }}>
-        <Link href="/calendar/edit">
-          <button>Edit Timetable</button>
-        </Link>
       </div>
     </div>
   );

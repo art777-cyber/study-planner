@@ -2,57 +2,147 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function Home() {
-  const [notes, setNotes] = useState<string[]>([]);
+  const router = useRouter();
+
+  const [userId, setUserId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const [notes, setNotes] = useState<any[]>([]);
   const [newNote, setNewNote] = useState("");
 
-  const [selectedNote, setSelectedNote] = useState<number | null>(null);
+  const [selectedNote, setSelectedNote] = useState<any>(null);
   const [editText, setEditText] = useState("");
 
+  // -------------------------
+  // AUTH CHECK
+  // -------------------------
   useEffect(() => {
-    const savedNotes = localStorage.getItem("notes");
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
 
-    if (savedNotes) {
-      setNotes(JSON.parse(savedNotes));
+      if (!data.user) {
+        router.push("/login");
+        return;
+      }
+
+      setUserId(data.user.id);
+      setLoading(false);
+    };
+
+    getUser();
+  }, [router]);
+
+  // -------------------------
+  // LOAD NOTES
+  // -------------------------
+  useEffect(() => {
+    if (!userId) return;
+
+    const loadNotes = async () => {
+      const { data, error } = await supabase
+        .from("notes")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.log("LOAD ERROR:", error.message);
+        return;
+      }
+
+      setNotes(data || []);
+    };
+
+    loadNotes();
+  }, [userId]);
+
+  // -------------------------
+  // ADD NOTE
+  // -------------------------
+  const handleAddNote = async () => {
+    if (!userId || !newNote.trim()) return;
+
+    const { data, error } = await supabase
+      .from("notes")
+      .insert([
+        {
+          user_id: userId,
+          content: newNote,
+        },
+      ])
+      .select();
+
+    if (error) {
+      console.log("INSERT ERROR:", error.message);
+      return;
     }
-  }, []);
 
-  const saveNotes = (updatedNotes: string[]) => {
-    setNotes(updatedNotes);
-    localStorage.setItem("notes", JSON.stringify(updatedNotes));
-  };
+    if (data) {
+      setNotes([data[0], ...notes]);
+    }
 
-  const handleAddNote = () => {
-    if (!newNote.trim()) return;
-
-    const updatedNotes = [...notes, newNote];
-
-    saveNotes(updatedNotes);
     setNewNote("");
   };
 
-  const handleDelete = () => {
-    if (selectedNote === null) return;
+  // -------------------------
+  // DELETE NOTE
+  // -------------------------
+  const handleDelete = async (id: string) => {
+    const { error } = await supabase
+      .from("notes")
+      .delete()
+      .eq("id", id);
 
-    const updatedNotes = notes.filter(
-      (_, index) => index !== selectedNote
+    if (error) {
+      console.log("DELETE ERROR:", error.message);
+      return;
+    }
+
+    setNotes(notes.filter((n) => n.id !== id));
+    setSelectedNote(null);
+  };
+
+  // -------------------------
+  // EDIT NOTE
+  // -------------------------
+  const handleEdit = async () => {
+    if (!selectedNote) return;
+
+    const { error } = await supabase
+      .from("notes")
+      .update({ content: editText })
+      .eq("id", selectedNote.id);
+
+    if (error) {
+      console.log("UPDATE ERROR:", error.message);
+      return;
+    }
+
+    setNotes(
+      notes.map((n) =>
+        n.id === selectedNote.id
+          ? { ...n, content: editText }
+          : n
+      )
     );
 
-    saveNotes(updatedNotes);
     setSelectedNote(null);
   };
 
-  const handleEdit = () => {
-    if (selectedNote === null) return;
+  // -------------------------
+  // LOADING STATE
+  // -------------------------
+  if (loading) {
+    return <p style={{ padding: 30 }}>Loading...</p>;
+  }
 
-    const updatedNotes = [...notes];
-    updatedNotes[selectedNote] = editText;
-
-    saveNotes(updatedNotes);
-    setSelectedNote(null);
-  };
-
+  // -------------------------
+  // UI
+  // -------------------------
   return (
     <div className="homepage">
       <h1 className="page-title">Study Planner</h1>
@@ -73,39 +163,36 @@ export default function Home() {
 
       <h2 className="section-title">Sticky Notes</h2>
 
-      <div>
-        <input
-          type="text"
-          placeholder="Enter a note..."
-          value={newNote}
-          onChange={(e) => setNewNote(e.target.value)}
-        />
+      <input
+        type="text"
+        placeholder="Enter a note..."
+        value={newNote}
+        onChange={(e) => setNewNote(e.target.value)}
+        
+      />
+      <></>
+      <br /><br />
 
-        <br />
-        <br />
-
-        <button className="nav-button" onClick={handleAddNote}>
-          Add Note
-        </button>
-      </div>
+      <button className="nav-button" onClick={handleAddNote}>
+        Add Note
+      </button>
 
       <div className="notes-container">
-        {notes.map((note, index) => (
+        {notes.map((note) => (
           <div
-            key={index}
+            key={note.id}
             className="note-card"
             onClick={() => {
-              setSelectedNote(index);
-              setEditText(note);
+              setSelectedNote(note);
+              setEditText(note.content);
             }}
-            style={{ cursor: "pointer" }}
           >
-            {note}
+            {note.content}
           </div>
         ))}
       </div>
 
-      {selectedNote !== null && (
+      {selectedNote && (
         <div
           style={{
             position: "fixed",
@@ -121,7 +208,6 @@ export default function Home() {
           <h3>Edit Note</h3>
 
           <input
-            type="text"
             value={editText}
             onChange={(e) => setEditText(e.target.value)}
           />
@@ -129,26 +215,21 @@ export default function Home() {
           <br />
           <br />
 
-          <div>
-  <button onClick={handleEdit}>
-    Save Changes
-  </button>
+          <button onClick={handleEdit}>Save</button>
 
-  <button
-    onClick={handleDelete}
-    style={{ marginLeft: "10px" }}
-  >
-    Delete
-  </button>
-</div>
+          <button
+            onClick={() => handleDelete(selectedNote.id)}
+            style={{ marginLeft: "10px" }}
+          >
+            Delete
+          </button>
 
-<br />
+          <br />
+          <br />
 
-<button
-  onClick={() => setSelectedNote(null)}
->
-  Cancel
-</button>
+          <button onClick={() => setSelectedNote(null)}>
+            Cancel
+          </button>
         </div>
       )}
     </div>
