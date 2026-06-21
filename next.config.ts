@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  output: "standalone",
+  experimental: {
+    optimizePackageImports: ["react", "react-dom"],
+  },
 };
 
 export default nextConfig;
