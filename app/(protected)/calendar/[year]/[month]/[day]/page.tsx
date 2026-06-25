@@ -30,7 +30,14 @@ export default function DayPage({
   const [userId, setUserId] = useState<string | null>(null);
 
   const [schedule, setSchedule] = useState<any>({});
-  const [editSchedule, setEditSchedule] = useState<any>({});
+  const [editSchedule, setEditSchedule] = useState<any>({
+    1: "",
+    2: "",
+    3: "",
+    4: "",
+    5: "",
+  });
+
   const [editing, setEditing] = useState(false);
 
   const [progress, setProgress] = useState<any>({});
@@ -50,7 +57,6 @@ export default function DayPage({
     if (!userId) return;
 
     const load = async () => {
-      // timetable
       const { data: timetableData } = await supabase
         .from("timetable")
         .select("*")
@@ -65,7 +71,6 @@ export default function DayPage({
 
       const baseSchedule = timetable[weekday] || {};
 
-      // ---------------- OVERRIDES ----------------
       const { data: overrideData } = await supabase
         .from("calendar_overrides")
         .select("*")
@@ -80,13 +85,28 @@ export default function DayPage({
         });
 
         setSchedule(overridden);
-        setEditSchedule(overridden);
+
+        // 🔥 FIX: ALWAYS FORCE 1–5
+        setEditSchedule({
+          1: overridden[1] || "",
+          2: overridden[2] || "",
+          3: overridden[3] || "",
+          4: overridden[4] || "",
+          5: overridden[5] || "",
+        });
       } else {
         setSchedule(baseSchedule);
-        setEditSchedule(baseSchedule);
+
+        // 🔥 FIX: ALWAYS FORCE 1–5
+        setEditSchedule({
+          1: baseSchedule[1] || "",
+          2: baseSchedule[2] || "",
+          3: baseSchedule[3] || "",
+          4: baseSchedule[4] || "",
+          5: baseSchedule[5] || "",
+        });
       }
 
-      // ---------------- PROGRESS ----------------
       const { data: progressData } = await supabase
         .from("calendar_progress")
         .select("*")
@@ -105,7 +125,6 @@ export default function DayPage({
 
       setProgress(formatted);
 
-      // ---------------- FILES ----------------
       const { data: fileData } = await supabase
         .from("class_files")
         .select("*")
@@ -152,11 +171,7 @@ export default function DayPage({
   }
 
   // ---------------- CHECKBOX ----------------
-  async function updateCheckbox(
-    period: string,
-    field: string,
-    value: boolean
-  ) {
+  async function updateCheckbox(period: string, field: string, value: boolean) {
     if (!userId) return;
 
     const updated = {
@@ -185,11 +200,7 @@ export default function DayPage({
   }
 
   // ---------------- FILE UPLOAD ----------------
-  async function uploadFile(
-    file: File,
-    period: string,
-    type: string
-  ) {
+  async function uploadFile(file: File, period: string, type: string) {
     if (!userId) return;
 
     const filePath = `${userId}/${dateKey}/${period}/${type}-${file.name}`;
@@ -225,7 +236,6 @@ export default function DayPage({
     ]);
   }
 
-  // ---------------- DELETE FILE ----------------
   async function deleteFile(filePath: string) {
     if (!userId) return;
 
@@ -259,13 +269,14 @@ export default function DayPage({
         <div style={{ border: "1px solid black", padding: 20, marginTop: 20 }}>
           <h3>Edit Timetable for this date</h3>
 
-          {Object.entries(editSchedule).map(([period, subject]: any) => (
+          {/* 🔥 FIX: ALWAYS 1–5 */}
+          {[1, 2, 3, 4, 5].map((period) => (
             <div key={period} style={{ marginBottom: 10 }}>
               <b>{period}</b>
 
               <input
                 style={{ marginLeft: 10 }}
-                value={subject}
+                value={editSchedule[period] || ""}
                 onChange={(e) =>
                   setEditSchedule({
                     ...editSchedule,
@@ -333,9 +344,7 @@ export default function DayPage({
 
           <hr />
 
-          <button
-            onClick={() => document.getElementById(`mat-${period}`)?.click()}
-          >
+          <button onClick={() => document.getElementById(`mat-${period}`)?.click()}>
             Upload Class Material
           </button>
           <input
@@ -350,11 +359,7 @@ export default function DayPage({
 
           <br />
 
-          <button
-            onClick={() =>
-              document.getElementById(`notes-${period}`)?.click()
-            }
-          >
+          <button onClick={() => document.getElementById(`notes-${period}`)?.click()}>
             Upload Notes
           </button>
           <input
@@ -369,9 +374,7 @@ export default function DayPage({
 
           <br />
 
-          <button
-            onClick={() => document.getElementById(`asg-${period}`)?.click()}
-          >
+          <button onClick={() => document.getElementById(`asg-${period}`)?.click()}>
             Upload Assignments
           </button>
           <input
@@ -384,7 +387,6 @@ export default function DayPage({
             }
           />
 
-          {/* FILES */}
           <div style={{ marginTop: 10 }}>
             {files
               .filter((f) => f.period === period)
