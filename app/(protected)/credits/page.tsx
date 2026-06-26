@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 
 type CreditRow = {
+  id?: string;
   category: string;
   required: number;
   completed: number;
@@ -11,24 +13,57 @@ type CreditRow = {
 
 export default function CreditsPage() {
   const [rows, setRows] = useState<CreditRow[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
 
+  // ---------------- GET USER ----------------
   useEffect(() => {
-    const saved = localStorage.getItem("creditTracker");
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      const user = data.user;
 
-    if (saved) {
-      setRows(JSON.parse(saved));
-    } else {
-      const initialRows: CreditRow[] = Array.from({ length: 15 }, () => ({
-        category: "",
-        required: 0,
-        completed: 0,
-        inProgress: 0,
-      }));
+      if (user) {
+        setUserId(user.id);
+        loadCredits(user.id);
+      }
+    };
 
-      setRows(initialRows);
-    }
+    getUser();
   }, []);
 
+  // ---------------- LOAD FROM SUPABASE ----------------
+  async function loadCredits(uid: string) {
+    const { data, error } = await supabase
+      .from("credit_tracker")
+      .select("*")
+      .eq("user_id", uid)
+      .order("created_at", { ascending: true });
+
+    if (error) return;
+
+    if (data && data.length > 0) {
+      setRows(
+        data.map((r) => ({
+          id: r.id,
+          category: r.category,
+          required: r.required,
+          completed: r.completed,
+          inProgress: r.in_progress,
+        }))
+      );
+    } else {
+      // initial empty rows
+      setRows(
+        Array.from({ length: 15 }, () => ({
+          category: "",
+          required: 0,
+          completed: 0,
+          inProgress: 0,
+        }))
+      );
+    }
+  }
+
+  // ---------------- UPDATE ROW ----------------
   function updateRow(
     index: number,
     field: keyof CreditRow,
@@ -49,6 +84,7 @@ export default function CreditsPage() {
     setRows(newRows);
   }
 
+  // ---------------- ADD ROW ----------------
   function addRow() {
     setRows([
       ...rows,
@@ -61,14 +97,47 @@ export default function CreditsPage() {
     ]);
   }
 
-  function deleteRow(index: number) {
+  // ---------------- DELETE ROW ----------------
+  async function deleteRow(index: number) {
+    const row = rows[index];
+
+    if (row.id) {
+      await supabase.from("credit_tracker").delete().eq("id", row.id);
+    }
+
     setRows(rows.filter((_, i) => i !== index));
   }
 
-  function saveProgress() {
-    localStorage.setItem("creditTracker", JSON.stringify(rows));
-    alert("Progress saved!");
+  // ---------------- SAVE ----------------
+  async function saveProgress() {
+    if (!userId) return;
+
+    // delete old rows
+    await supabase.from("credit_tracker").delete().eq("user_id", userId);
+
+    // insert fresh rows
+    const payload = rows.map((r) => ({
+      user_id: userId,
+      category: r.category,
+      required: r.required,
+      completed: r.completed,
+      in_progress: r.inProgress,
+    }));
+
+    const { error } = await supabase
+      .from("credit_tracker")
+      .insert(payload);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    alert("Saved to Supabase!");
+    loadCredits(userId);
   }
+
+  if (!userId) return <p style={{ padding: 30 }}>Loading...</p>;
 
   return (
     <div style={{ padding: "30px" }}>
@@ -83,84 +152,62 @@ export default function CreditsPage() {
       >
         <thead>
           <tr>
-            <th style={{ border: "1px solid black", padding: "10px" }}>
-              Subject Category
-            </th>
-
-            <th style={{ border: "1px solid black", padding: "10px" }}>
-              Required Credits
-            </th>
-
-            <th style={{ border: "1px solid black", padding: "10px" }}>
-              Completed Credits
-            </th>
-
-            <th style={{ border: "1px solid black", padding: "10px" }}>
-              In Progress Credits
-            </th>
-
-            <th style={{ border: "1px solid black", padding: "10px" }}>
-              Remaining Credits
-            </th>
-
-            <th style={{ border: "1px solid black", padding: "10px" }}>
-              Delete
-            </th>
+            <th>Subject Category</th>
+            <th>Required Credits</th>
+            <th>Completed Credits</th>
+            <th>In Progress Credits</th>
+            <th>Remaining</th>
+            <th>Delete</th>
           </tr>
         </thead>
 
         <tbody>
           {rows.map((row, index) => (
             <tr key={index}>
-              <td style={{ border: "1px solid black", padding: "5px" }}>
+              <td>
                 <input
-                  type="text"
                   value={row.category}
                   onChange={(e) =>
                     updateRow(index, "category", e.target.value)
                   }
-                  style={{ width: "95%" }}
                 />
               </td>
 
-              <td style={{ border: "1px solid black", padding: "5px" }}>
+              <td>
                 <input
                   type="number"
                   value={row.required}
                   onChange={(e) =>
                     updateRow(index, "required", e.target.value)
                   }
-                  style={{ width: "70px" }}
                 />
               </td>
 
-              <td style={{ border: "1px solid black", padding: "5px" }}>
+              <td>
                 <input
                   type="number"
                   value={row.completed}
                   onChange={(e) =>
                     updateRow(index, "completed", e.target.value)
                   }
-                  style={{ width: "70px" }}
                 />
               </td>
 
-              <td style={{ border: "1px solid black", padding: "5px" }}>
+              <td>
                 <input
                   type="number"
                   value={row.inProgress}
                   onChange={(e) =>
                     updateRow(index, "inProgress", e.target.value)
                   }
-                  style={{ width: "70px" }}
                 />
               </td>
 
-              <td style={{ border: "1px solid black", padding: "5px" }}>
+              <td>
                 {row.required - row.completed - row.inProgress}
               </td>
 
-              <td style={{ border: "1px solid black", padding: "5px" }}>
+              <td>
                 <button onClick={() => deleteRow(index)}>
                   Delete
                 </button>
@@ -172,14 +219,9 @@ export default function CreditsPage() {
 
       <br />
 
-      <button onClick={addRow}>
-        Add Row
-      </button>
+      <button onClick={addRow}>Add Row</button>
 
-      <button
-        onClick={saveProgress}
-        style={{ marginLeft: "20px" }}
-      >
+      <button onClick={saveProgress} style={{ marginLeft: "20px" }}>
         Save Progress
       </button>
     </div>
