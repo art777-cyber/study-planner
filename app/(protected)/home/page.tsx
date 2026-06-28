@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import { useRouter } from "next/navigation";
 
 type Note = {
   id: number;
@@ -10,6 +11,8 @@ type Note = {
 };
 
 export default function Home() {
+  const router = useRouter();
+
   const [notes, setNotes] = useState<Note[]>([]);
   const [newNote, setNewNote] = useState("");
 
@@ -36,6 +39,12 @@ export default function Home() {
 
     fetchNotes();
   }, []);
+
+  // 🔥 LOGOUT FUNCTION (ADDED)
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/"); // change to /login if you have login page
+  };
 
   const handleAddNote = async () => {
     if (!newNote.trim()) return;
@@ -119,6 +128,11 @@ export default function Home() {
   return (
     <div className="homepage">
       <h1 className="page-title">Study Planner</h1>
+
+      {/* 🔥 LOGOUT BUTTON ADDED */}
+      <button onClick={handleLogout} style={{ marginBottom: "10px" }}>
+        Logout
+      </button>
 
       <div className="button-group">
         <Link href="/timetable">
