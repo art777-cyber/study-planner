@@ -1,8 +1,8 @@
-# 📚 Study Planner
+# Study Planner
 
-## 🔗 Live Demo
+## Live Demo
 
-👉 https://study-planner.aryarajtyagi777.workers.dev
+https://study-planner.aryarajtyagi777.workers.dev
 
 ---
 
@@ -18,21 +18,22 @@
 
 ## Project Overview
 
-Study Planner is a full-stack academic management web application designed to help university students organize courses, schedules, assignments, academic materials, and graduation progress in one unified system.
+Study Planner is a full-stack academic management web application designed to help university students organize courses, schedules, assignments, academic materials, and academic progress in one unified system.
 
-The project is built as both a personal productivity tool and a portfolio project demonstrating modern full-stack development, edge deployment, and backend-as-a-service architecture.
+It is built as both:
+- a productivity tool for students  
+- a portfolio project demonstrating modern full-stack and edge deployment architecture  
 
 ---
 
 ## System Architecture
 
-
 User → Next.js Frontend → Cloudflare Workers (Edge Runtime) → Supabase (DB / Auth / Storage)
 
 
-- The frontend is deployed globally using Cloudflare Workers.
-- Supabase handles authentication, database storage, and file storage.
-- All communication happens via secure HTTP APIs.
+- Frontend deployed globally on Cloudflare edge network  
+- Supabase handles authentication, database, and file storage  
+- Communication happens via secure HTTP APIs  
 
 ---
 
@@ -40,219 +41,210 @@ User → Next.js Frontend → Cloudflare Workers (Edge Runtime) → Supabase (DB
 
 The application allows users to:
 
-- Create and manage a weekly timetable
-- Generate a dynamic calendar from the timetable
-- Override schedules for specific dates
-- Upload and store class materials (PDFs)
-- Track assignments and study progress
-- Monitor graduation credit requirements
-- Maintain reminders and sticky notes
+- Create and manage a weekly timetable  
+- Generate a dynamic calendar from timetable  
+- Override schedules for specific dates  
+- Upload and store class materials (PDFs)  
+- Track assignments and study progress  
+- Monitor graduation credit requirements  
+- Maintain sticky notes and reminders  
 
 ---
 
 ## Core Features
 
 ### 1. Timetable System
-Users define a weekly timetable that acts as the base template for all scheduling logic.
+Weekly timetable acts as the base structure for all scheduling logic.
 
 ---
 
 ### 2. Calendar System
-A dynamic calendar is generated from the weekly timetable.
+Dynamic calendar generated from timetable.
 
 Users can:
-- View scheduled classes by date
-- Navigate monthly views
-- Override individual dates (e.g., cancelled or rescheduled classes)
-- Preserve the original timetable as the base source of truth
+- View daily class schedules  
+- Navigate monthly views  
+- Override specific dates (e.g., cancelled classes)  
+- Preserve base timetable logic  
 
 ---
 
 ### 3. Class Session Workspace
 
-Each class session represents a specific occurrence of a course.
+Each class session represents a real occurrence of a course.
 
-#### File Storage
-- Lecture slides (PDF)
-- Notes (PDF)
-- Assignments (PDF)
-
-#### Progress Tracking
-- Material reviewed
-- Homework completed
-- Homework submitted
-
-All progress is stored per user and per session.
+#### Includes:
+- PDF uploads (notes, assignments, materials)  
+- Progress tracking (revision, homework, submission)  
+- Per-session storage in Supabase  
 
 ---
 
 ### 4. Credit Tracker
-A flexible system for monitoring graduation requirements.
+Tracks graduation progress.
 
 Users can:
-- Define custom credit categories
-- Set required credit totals
-- Track completed and in-progress credits
-- Manually update progress
+- Add custom credit categories  
+- Define required credits  
+- Track completed / in-progress credits  
+- Update progress manually  
 
 ---
 
 ### 5. Sticky Notes
-A lightweight system for reminders, deadlines, and quick notes.
+Quick notes system for reminders and tasks.
 
 ---
 
 ## Authentication & Backend
 
-Supabase is used as the backend service.
+Built using Supabase.
 
 ### Why Supabase
 
-- **Database (PostgreSQL):** Stores structured academic data  
-- **Authentication:** Handles secure user login and data separation  
-- **Storage:** Manages PDF uploads and course materials  
-
-Supabase was chosen because it provides a full backend stack through HTTP APIs, making it compatible with edge runtimes like Cloudflare Workers.
+- PostgreSQL database for structured academic data  
+- Authentication system for user isolation  
+- Storage system for PDFs and files  
+- Works well with edge runtime via HTTP APIs  
 
 ---
 
 ## Deployment
 
-The application is deployed using **OpenNext.js Cloudflare adapter**.
+### Initial Deployment (Attempt)
+- First attempted deployment using Cloudflare + GitHub integration  
+- Faced issues with build pipeline and configuration mismatch  
 
-### Deployment Flow
+### Final Deployment (Working Setup)
+- Successfully deployed using **manual Wrangler + OpenNext.js Cloudflare adapter**  
+- Build process:
+
+Next.js → OpenNext Build → Cloudflare Worker Bundle → Live Deployment
 
 
-Next.js App → OpenNext Build → Cloudflare Workers Deployment → Live Application
-
-
-This converts the Next.js application into an edge-compatible serverless deployment running globally on Cloudflare’s network.
+- Final live app runs on Cloudflare Workers globally  
 
 ---
 
 ## Data Model
 
 ### User
-Managed via Supabase Authentication
-
----
-
-### Course
-- Course name
-- Credit value
+Handled by Supabase Auth
 
 ---
 
 ### Timetable Entry
-- Day of week
-- Time slot / period
-- Associated course
+- day of week  
+- period  
+- subject  
 
 ---
 
 ### Calendar Override
-- Specific date
-- Modified schedule for that day
+- specific date  
+- modified schedule  
 
 ---
 
-### Class Session
-Represents a specific occurrence of a class.
-
-Includes:
-- Uploaded PDFs (stored in Supabase Storage)
-- Progress tracking
-- Session metadata
+### Class Session Data
+- file uploads  
+- progress tracking  
+- session metadata  
 
 ---
 
 ### Credit Category
-- Required credits
-- Completed credits
-- In-progress credits
+- required credits  
+- completed credits  
+- in progress credits  
 
 ---
 
-### Sticky Note
-- Content
-- Timestamp
+### Sticky Notes
+- note content  
+- timestamps  
 
 ---
 
 ## Storage Design
 
-### Database (Supabase PostgreSQL)
-Stores:
-- Users
-- Timetables
-- Calendar overrides
-- Academic progress
-- Credit tracking data
+### Supabase PostgreSQL
+Used for:
+- users  
+- timetable  
+- calendar overrides  
+- progress tracking  
+- credit data  
 
-### File Storage (Supabase Storage)
-Stores:
-- PDF lecture notes
-- PDF assignments
-- PDF class materials
-
-### Design Reasoning
-Structured relational data is stored in PostgreSQL, while large binary files are handled by object storage for efficiency and scalability.
+### Supabase Storage
+Used for:
+- lecture PDFs  
+- assignments  
+- notes  
 
 ---
 
 ## Key Architectural Decisions
 
 ### Why Next.js
-- Full-stack framework (frontend + API routes)
-- Built-in routing system
-- Easy integration with backend services
-- Optimized for production deployment
+- Full-stack framework  
+- API routes + frontend in one  
+- Strong ecosystem  
+- Easy integration with Supabase  
 
 ---
 
 ### Why TypeScript
-- Strong typing for complex academic data models
-- Improved maintainability
-- Reduced runtime errors
-- Better scalability for large features like scheduling logic
+- Strong typing for complex scheduling logic  
+- Safer refactoring  
+- Better scalability  
 
 ---
 
 ### Why Cloudflare Workers
-- Global edge deployment
-- Low latency worldwide
-- Serverless architecture
-- Scales automatically
+- Global edge deployment  
+- Low latency  
+- Serverless scaling  
+- Works well with static + API hybrid apps  
 
 ---
 
 ### Why Supabase (instead of Prisma/D1)
-Initially, Prisma and Cloudflare D1 were considered for a traditional database setup. However, the final architecture shifted to Supabase because:
-
-- It provides database + authentication + storage in one system
-- It works well with edge environments via HTTP APIs
-- It avoids limitations of direct database connections in Cloudflare Workers
-
-Prisma was not used in production due to edge runtime constraints.
+- Unified backend (DB + Auth + Storage)  
+- Works with edge runtime via APIs  
+- Avoids direct DB connection issues in Workers  
 
 ---
 
 ## Challenges
 
-- Adapting a Next.js application to Cloudflare Workers (edge runtime constraints)
-- Designing a dynamic timetable → calendar generation system
-- Handling file uploads efficiently using Supabase Storage
-- Choosing an edge-compatible backend architecture
-- Managing data consistency across timetable overrides and generated calendars
+- Adapting Next.js to Cloudflare Workers edge constraints  
+- Fixing OpenNext build + deployment pipeline issues  
+- Designing timetable → calendar override system  
+- Managing file uploads through Supabase Storage  
+- Ensuring data consistency across multiple tables  
+- **Setting up secure authentication persistence (logout + session handling was not implemented yet due to added complexity)**  
+- Debugging CLI / deployment issues across Windows + Wrangler environment  
 
 ---
 
 ## Future Improvements
 
-- Mobile application version
-- Shared timetables between users
-- Exam scheduling and tracking system
-- Push notification system for reminders
-- Collaborative study planning features
+- Full authentication control (logout + account deletion flow via Edge Function)  
+- Mobile application version  
+- Shared timetables between users  
+- AI-powered study planning suggestions  
+- Push notifications for deadlines  
+- Collaborative study planning features  
+- Analytics dashboard for study performance  
 
 ---
+
+## Summary
+
+Study Planner evolved from a simple productivity tool into a full-stack edge-deployed academic system integrating:
+
+- Next.js frontend  
+- Supabase backend  
+- Cloudflare global deployment  
+- Real-time file + schedule management system
