@@ -1,0 +1,15 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/timetable/route": "app/api/timetable/route.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/login/page": "app/login/page.js",
+  "/test/page": "app/test/page.js",
+  "/page": "app/page.js",
+  "/signup/page": "app/signup/page.js",
+  "/set-password/page": "app/set-password/page.js",
+  "/(protected)/home/page": "app/(protected)/home/page.js",
+  "/(protected)/timetable/page": "app/(protected)/timetable/page.js",
+  "/(protected)/calendar/[year]/[month]/[day]/page": "app/(protected)/calendar/[year]/[month]/[day]/page.js",
+  "/(protected)/calendar/page": "app/(protected)/calendar/page.js",
+  "/(protected)/credits/page": "app/(protected)/credits/page.js"
+}
